@@ -6,8 +6,16 @@ import {reportError as mockReportError} from '../api'
 
 jest.mock('../api')
 
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterAll(() => {
+  console.error.mockRestore() // restore original implementation
+})
+
 afterEach(() => {
-  jest.clearAllMocks()
+  jest.clearAllMocks() // clear mocks prevent leaks to another test
 })
 
 function Bomb({shouldThrow}) {
@@ -37,4 +45,6 @@ test('calls report error and render there was a problem', () => {
   const info = {componentStack: expect.stringContaining('Bomb')}
   expect(mockReportError).toHaveBeenCalledWith(error, info)
   expect(mockReportError).toHaveBeenCalledTimes(1)
+
+  expect(console.error).toBeCalledTimes(2) // 1 jest-dom, 1 react-dom
 })
