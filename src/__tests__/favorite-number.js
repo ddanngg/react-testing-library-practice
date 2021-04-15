@@ -9,7 +9,10 @@ test('entering an invalid input value', () => {
   const screen = render(<FavoriteNumber />)
   const input = screen.getByLabelText(/favorite number/i)
 
-  user.type(input, '10')
   // fireEvent.change(input, {target: {value: '10'}})
+  user.type(input, '10')
   expect(screen.getByRole('alert')).toHaveTextContent(/number is invalid/i)
+
+  screen.rerender(<FavoriteNumber max={10} />)
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 })
